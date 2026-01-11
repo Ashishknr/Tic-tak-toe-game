@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe – Multiplayer</title>
+
+<style>
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(135deg,#141e30,#243b55);
+  font-family:Arial,sans-serif;
+  color:#fff;
+}
+
+/* Layout */
+.container{
+  display:flex;
+  gap:30px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+/* Game */
+.game-container{
+  width:300px;
+  background:#1f2937;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  text-align:center;
+}
+
+h1{color:#f87171;margin:0}
+p{font-size:14px;color:#d1d5db}
+
+.board-wrapper{position:relative;margin:15px 0}
+
+.board{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.cell{
+  width:80px;
+  height:80px;
+  background:#111827;
+  border-radius:10px;
+  font-size:2.5rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:transform .1s;
+}
+.cell:hover{transform:scale(1.05)}
+
+.cell.x{color:#ef4444}
+.cell.o{color:#60a5fa}
+.cell.hover-x{color:rgba(239,68,68,.6)}
+.cell.hover-o{color:rgba(96,165,250,.6)}
+
+canvas{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.status{font-weight:bold;margin:10px 0}
+
+button{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#ef4444;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+button:hover{background:#dc2626}
+
+/* Ripple */
+.ripple{
+  position:absolute;
+  border-radius:50%;
+  background:rgba(255,255,255,.4);
+  animation:ripple .6s linear;
+  transform:scale(0);
+}
+@keyframes ripple{
+  to{transform:scale(4);opacity:0}
+}
+
+/* Scoreboard */
+.scoreboard{
+  width:160px;
+  background:#020617;
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 0 20px rgba(0,0,0,.5);
+}
+.scoreboard h2{text-align:center;margin-bottom:12px}
+
+.score-row{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 10px;
+  margin-bottom:10px;
+  border-radius:8px;
+  font-weight:bold;
+}
+.score-row.x{background:rgba(255,0,0,.2);color:#ff4d4d}
+.score-row.o{background:rgba(0,0,255,.2);color:#4da6ff}
+.score-row.draw{background:rgba(255,255,255,.1)}
+
+#resetScore{
+  background:#334155;
+}
+#resetScore:hover{background:#475569}
+
+/* Mobile */
+@media(max-width:600px){
+  .container{flex-direction:column}
+  .scoreboard{width:100%}
+}
+
+
+/* =========================
+   📱 MOBILE RESPONSIVENESS
+   ========================= */
+
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    padding: 20px 0;
+  }
+
+  .container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .game-container {
+    width: 95%;
+    max-width: 340px;
+  }
+
+  .scoreboard {
+    width: 95%;
+    max-width: 340px;
+  }
+}
+
+@media (max-width: 480px) {
+  .board {
+    gap: 8px;
+  }
+
+  .cell {
+    width: 65px;
+    height: 65px;
+    font-size: 2rem;
+  }
+
+  .game-container h1 {
+    font-size: 1.6rem;
+  }
+
+  .status {
+    font-size: 14px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 9px;
+  }
+}
+
+@media (max-width: 360px) {
+  .cell {
+    width: 58px;
+    height: 58px;
+    font-size: 1.8rem;
+  }
+
+  .score-row {
+    font-size: 14px;
+  }
+}
+.cell {
+  touch-action: manipulation;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- SCORE -->
+  <div class="scoreboard">
+    <h2>Score</h2>
+    <div class="score-row x"><span>X</span><span id="scoreX">0</span></div>
+    <div class="score-row o"><span>O</span><span id="scoreO">0</span></div>
+    <div class="score-row draw"><span>Draw</span><span id="scoreDraw">0</span></div>
+    <button id="resetScore">Reset Score</button>
+  </div>
+
+  <!-- GAME -->
+  <div class="game-container">
+    <h1>Tic Tac Toe</h1>
+    <p>Multiplayer Mode</p>
+
+    <div class="board-wrapper">
+      <div class="board" id="board"></div>
+      <canvas id="winLine"></canvas>
+    </div>
+
+    <div class="status" id="status">Player X's Turn</div>
+    <button onclick="resetGame()">Restart Game</button>
+  </div>
+
+</div>
+
+<audio id="bgMusic" loop>
+  <source src="noncopyright-music-pianos-295174.mp3">
+</audio>
+<audio id="clickSound">
+  <source src="computer-mouse-click-351398.mp3">
+</audio>
+
+
+<div class="container">
+  <!-- scoreboard -->
+  <!-- game-container -->
+</div>
+
+
+<script>
+const boardEl=document.getElementById("board");
+const statusEl=document.getElementById("status");
+const canvas=document.getElementById("winLine");
+const ctx=canvas.getContext("2d");
+
+const bgMusic=document.getElementById("bgMusic");
+const clickSound=document.getElementById("clickSound");
+
+let board=Array(9).fill("");
+let currentPlayer="X";
+let gameOver=false;
+
+let scoreX=0, scoreO=0, scoreDraw=0;
+const scoreXEl=document.getElementById("scoreX");
+const scoreOEl=document.getElementById("scoreO");
+const scoreDrawEl=document.getElementById("scoreDraw");
+
+const wins=[
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+/* Start music */
+document.addEventListener("pointerdown",()=>{
+  bgMusic.volume=.3;
+  bgMusic.play();
+},{once:true});
+
+/* Board */
+function resizeCanvas(){
+  canvas.width=boardEl.offsetWidth;
+  canvas.height=boardEl.offsetHeight;
+}
+
+function createBoard(){
+  boardEl.innerHTML="";
+  resizeCanvas();
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  board.forEach((v,i)=>{
+    const cell=document.createElement("div");
+    cell.className="cell";
+
+    if(v){
+      cell.textContent=v;
+      cell.classList.add(v.toLowerCase());
+    }else{
+      cell.onmouseenter=()=>{
+        cell.textContent=currentPlayer;
+        cell.classList.add(currentPlayer==="X"?"hover-x":"hover-o");
+      };
+      cell.onmouseleave=()=>{
+        cell.textContent="";
+        cell.classList.remove("hover-x","hover-o");
+      };
+    }
+
+    cell.onclick=()=>makeMove(i);
+    cell.onpointerdown=e=>{
+      clickSound.currentTime=0;
+      clickSound.play();
+      navigator.vibrate?.(30);
+      ripple(e,cell);
+    };
+
+    boardEl.appendChild(cell);
+  });
+}
+
+function ripple(e,el){
+  const r=document.createElement("span");
+  const d=Math.max(el.clientWidth,el.clientHeight);
+  r.className="ripple";
+  r.style.width=r.style.height=d+"px";
+  r.style.left=e.offsetX-d/2+"px";
+  r.style.top=e.offsetY-d/2+"px";
+  el.appendChild(r);
+  setTimeout(()=>r.remove(),600);
+}
+
+function makeMove(i){
+  if(board[i]||gameOver)return;
+  board[i]=currentPlayer;
+  createBoard();
+
+  const w=winner(currentPlayer);
+  if(w){
+    statusEl.textContent=`Player ${currentPlayer} Wins 🎉`;
+    updateScore(currentPlayer);
+    drawLine(w,currentPlayer==="X"?"#ef4444":"#60a5fa");
+    gameOver=true;
+    return;
+  }
+
+  if(board.every(Boolean)){
+    statusEl.textContent="Draw 🤝";
+    updateScore("draw");
+    gameOver=true;
+    return;
+  }
+
+  currentPlayer=currentPlayer==="X"?"O":"X";
+  statusEl.textContent=`Player ${currentPlayer}'s Turn`;
+}
+
+function winner(p){return wins.find(w=>w.every(i=>board[i]===p));}
+
+function drawLine(w,color){
+  const c=document.querySelectorAll(".cell");
+  const a=c[w[0]].getBoundingClientRect();
+  const b=c[w[2]].getBoundingClientRect();
+  const r=boardEl.getBoundingClientRect();
+  ctx.strokeStyle=color;
+  ctx.lineWidth=6;
+  ctx.lineCap="round";
+  ctx.beginPath();
+  ctx.moveTo(a.left-r.left+a.width/2,a.top-r.top+a.height/2);
+  ctx.lineTo(b.left-r.left+b.width/2,b.top-r.top+b.height/2);
+  ctx.stroke();
+}
+
+function updateScore(w){
+  if(w==="X"){scoreX++;scoreXEl.textContent=scoreX;}
+  else if(w==="O"){scoreO++;scoreOEl.textContent=scoreO;}
+  else{scoreDraw++;scoreDrawEl.textContent=scoreDraw;}
+}
+
+function resetGame(){
+  board=Array(9).fill("");
+  currentPlayer="X";
+  gameOver=false;
+  statusEl.textContent="Player X's Turn";
+  createBoard();
+}
+
+document.getElementById("resetScore").onclick=()=>{
+  scoreX=scoreO=scoreDraw=0;
+  scoreXEl.textContent=scoreOEl.textContent=scoreDrawEl.textContent=0;
+};
+
+window.addEventListener("resize",resizeCanvas);
+createBoard();
+
+
+</script>
+
+</body>
+</html>
