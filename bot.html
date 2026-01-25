@@ -3,199 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tic Tac Toe – Advanced Bot</title>
+<title>Tic Tac Toe – Easy Bot</title>
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
   min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  background:linear-gradient(135deg,#141e30,#243b55);
-  font-family:Arial, sans-serif;
+  font-family:Segoe UI,Arial,sans-serif;
+  background:linear-gradient(120deg,#0f172a,#020617);
   color:#fff;
-}
-
-/* Layout */
-.container{
-  display:flex;
-  gap:25px;
-  align-items:center;
-  flex-wrap:wrap;
-}
-
-/* Game Box */
-.game-container{
-  background:#1f2937;
-  padding:20px;
-  border-radius:15px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
-  width:300px;
-  text-align:center;
-}
-
-h1{margin:0;color:#f87171}
-p{font-size:14px;color:#d1d5db}
-
-.board-wrapper{position:relative;margin:15px 0}
-
-.board{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-
-.cell{
-  width:80px;
-  height:80px;
-  background:#111827;
-  border-radius:10px;
-  font-size:2.5rem;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  position:relative;
   overflow:hidden;
 }
 
-.cell.x{color:#60a5fa}
-.cell.o{color:#f87171}
-
-canvas{
-  position:absolute;
+body::before{
+  content:"";
+  position:fixed;
   inset:0;
+  background:
+    radial-gradient(circle at top left,rgba(255,255,255,.08),transparent 40%),
+    radial-gradient(circle at bottom right,rgba(255,255,255,.06),transparent 45%);
+  animation:bgMove 10s infinite alternate;
   pointer-events:none;
 }
-
-.status{font-weight:bold;margin:10px 0}
-
-button{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  background:#ef4444;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
+@keyframes bgMove{
+  to{transform:translateY(40px)}
 }
-button:hover{background:#dc2626}
 
-/* Ripple */
-.ripple{
-  position:absolute;
-  border-radius:50%;
-  background:rgba(255,255,255,.4);
-  animation:ripple .6s linear;
-  transform:scale(0);
-}
-@keyframes ripple{
-  to{transform:scale(4);opacity:0}
+.container{
+  display:flex;
+  gap:30px;
+  align-items:center;
+  flex-wrap:wrap;
+  z-index:1;
 }
 
 /* Scoreboard */
 .scoreboard{
-  width:160px;
-  background:#020617;
-  border-radius:14px;
-  padding:16px;
-  box-shadow:0 0 20px rgba(0,0,0,.5);
+  width:190px;
+  background:rgba(2,6,23,.75);
+  backdrop-filter:blur(14px);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 0 30px rgba(0,0,0,.7);
 }
-.scoreboard h2{text-align:center;margin-bottom:12px}
+.scoreboard h2{text-align:center;margin-bottom:14px}
 
 .score-row{
   display:flex;
   justify-content:space-between;
-  padding:8px 10px;
-  border-radius:8px;
+  padding:10px 12px;
   margin-bottom:10px;
+  border-radius:10px;
   font-weight:bold;
 }
-.score-row.x{background:rgba(255,0,0,.2);color:#ff4d4d}
-.score-row.o{background:rgba(0,0,255,.2);color:#4da6ff}
+.score-row.x{background:rgba(96,165,250,.2);color:#60a5fa}
+.score-row.o{background:rgba(248,113,113,.2);color:#f87171}
 .score-row.draw{background:rgba(255,255,255,.1)}
 
 #resetScore{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
   background:#334155;
+  color:#fff;
+  cursor:pointer;
 }
 #resetScore:hover{background:#475569}
 
-/* Mobile */
+/* Game */
+.game{
+  width:320px;
+  background:rgba(31,41,55,.8);
+  backdrop-filter:blur(16px);
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 0 40px rgba(0,0,0,.8);
+  text-align:center;
+}
+
+.game h1{margin:0;color:#f87171}
+.game p{color:#cbd5f5;margin:6px 0 14px}
+
+/* Board */
+.board{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:15px 0;
+}
+
+.cell{
+  width:90px;
+  height:90px;
+  background:linear-gradient(145deg,#020617,#0f172a);
+  border-radius:16px;
+  font-size:2.6rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(0,0,0,.7);
+  transition:.2s;
+}
+
+.cell:hover{
+  transform:translateY(-4px) scale(1.05);
+}
+
+.cell.x{color:#60a5fa;text-shadow:0 0 14px rgba(96,165,250,.9)}
+.cell.o{color:#f87171;text-shadow:0 0 14px rgba(248,113,113,.9)}
+
+.cell.win{
+  animation:winPulse .8s infinite;
+}
+@keyframes winPulse{
+  50%{box-shadow:0 0 30px #fff}
+}
+
+/* Status */
+.status{
+  margin:14px 0;
+  padding:10px;
+  border-radius:12px;
+  font-weight:bold;
+  background:rgba(255,255,255,.08);
+}
+
+/* Button */
+button.restart{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
+}
+button.restart:hover{transform:translateY(-2px)}
+
 @media(max-width:600px){
   .container{flex-direction:column}
-  .scoreboard{width:100%}
+  .cell{width:75px;height:75px}
 }
-
-/* =========================
-   📱 MOBILE RESPONSIVENESS
-   ========================= */
-
-@media (max-width: 768px) {
-  body {
-    height: auto;
-    padding: 20px 0;
-  }
-
-  .container {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .game-container {
-    width: 95%;
-    max-width: 340px;
-  }
-
-  .scoreboard {
-    width: 95%;
-    max-width: 340px;
-  }
-}
-
-@media (max-width: 480px) {
-  .board {
-    gap: 8px;
-  }
-
-  .cell {
-    width: 65px;
-    height: 65px;
-    font-size: 2rem;
-  }
-
-  .game-container h1 {
-    font-size: 1.6rem;
-  }
-
-  .status {
-    font-size: 14px;
-  }
-
-  button {
-    font-size: 15px;
-    padding: 9px;
-  }
-}
-
-@media (max-width: 360px) {
-  .cell {
-    width: 58px;
-    height: 58px;
-    font-size: 1.8rem;
-  }
-
-  .score-row {
-    font-size: 14px;
-  }
-}
-
-
-.cell {
-  touch-action: manipulation;
-}
-
 </style>
 </head>
 
@@ -203,217 +158,134 @@ button:hover{background:#dc2626}
 
 <div class="container">
 
-  <!-- SCORE -->
   <div class="scoreboard">
     <h2>Score</h2>
-    <div class="score-row x"><span>Player 1</span><span id="scoreX">0</span></div>
-    <div class="score-row o"><span>Bot</span><span id="scoreO">0</span></div>
-    <div class="score-row draw"><span>Draw</span><span id="scoreDraw">0</span></div>
+    <div class="score-row x"><span>You (X)</span><span id="sx">0</span></div>
+    <div class="score-row o"><span>Bot (O)</span><span id="so">0</span></div>
+    <div class="score-row draw"><span>Draw</span><span id="sd">0</span></div>
     <button id="resetScore">Reset Score</button>
   </div>
 
-  <!-- GAME -->
-  <div class="game-container">
+  <div class="game">
     <h1>Tic Tac Toe</h1>
-    <p>First to align three wins</p>
+    <p>Easy Bot Mode</p>
 
-    <div class="board-wrapper">
-      <div class="board" id="board"></div>
-      <canvas id="winLine"></canvas>
-    </div>
+    <div class="board" id="board"></div>
 
-    <div class="status" id="status">Your turn (X)</div>
-    <button onclick="resetGame()">Restart Game</button>
+    <div class="status" id="status">Your Turn (X)</div>
+    <button class="restart" onclick="resetGame()">Restart Game</button>
   </div>
 
 </div>
 
-<!-- AUDIO -->
-<audio id="bgMusic" loop>
-  <source src="noncopyright-music-pianos-295174.mp3">
-</audio>
-<audio id="clickSound">
-  <source src="computer-mouse-click-351398.mp3">
-</audio>
-
-
-<div class="container">
-  <!-- scoreboard -->
-  <!-- game-container -->
-</div>
-
 <script>
-const boardEl = document.getElementById("board");
-const statusEl = document.getElementById("status");
-const canvas = document.getElementById("winLine");
-const ctx = canvas.getContext("2d");
+const boardEl=document.getElementById("board");
+const statusEl=document.getElementById("status");
+const sx=document.getElementById("sx");
+const so=document.getElementById("so");
+const sd=document.getElementById("sd");
 
-const bgMusic = document.getElementById("bgMusic");
-const clickSound = document.getElementById("clickSound");
+let board=Array(9).fill("");
+let gameOver=false;
+const human="X", bot="O";
+let scoreX=0,scoreO=0,scoreD=0;
 
-let board = Array(9).fill("");
-let gameOver = false;
-
-const human = "X", bot = "O";
-
-let scoreX = 0, scoreO = 0, scoreDraw = 0;
-const scoreXEl = document.getElementById("scoreX");
-const scoreOEl = document.getElementById("scoreO");
-const scoreDrawEl = document.getElementById("scoreDraw");
-
-const wins = [
+const wins=[
   [0,1,2],[3,4,5],[6,7,8],
   [0,3,6],[1,4,7],[2,5,8],
   [0,4,8],[2,4,6]
 ];
 
-/* MUSIC START */
-document.addEventListener("pointerdown",()=>{
-  bgMusic.volume=.3;
-  bgMusic.play();
-},{once:true});
-
-/* BOARD */
-function resizeCanvas(){
-  canvas.width = boardEl.offsetWidth;
-  canvas.height = boardEl.offsetHeight;
-}
-
-function createBoard(){
+function drawBoard(){
   boardEl.innerHTML="";
-  resizeCanvas();
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
   board.forEach((v,i)=>{
-    const cell=document.createElement("div");
-    cell.className="cell";
-    if(v) cell.classList.add(v.toLowerCase());
-    cell.textContent=v;
-
-    cell.onclick=()=>humanMove(i);
-    cell.onpointerdown=e=>{
-      clickSound.currentTime=0;
-      clickSound.play();
-      navigator.vibrate?.(30);
-      ripple(e,cell);
-    };
-    boardEl.appendChild(cell);
+    const c=document.createElement("div");
+    c.className="cell";
+    if(v){c.textContent=v;c.classList.add(v.toLowerCase());}
+    c.onclick=()=>humanMove(i);
+    boardEl.appendChild(c);
   });
 }
 
-function ripple(e,el){
-  const r=document.createElement("span");
-  const d=Math.max(el.clientWidth,el.clientHeight);
-  r.className="ripple";
-  r.style.width=r.style.height=d+"px";
-  r.style.left=e.offsetX-d/2+"px";
-  r.style.top=e.offsetY-d/2+"px";
-  el.appendChild(r);
-  setTimeout(()=>r.remove(),600);
-}
-
-/* GAME LOGIC */
 function humanMove(i){
   if(board[i]||gameOver)return;
   board[i]=human;
-  createBoard();
+  drawBoard();
 
-  const w=winner(human);
-  if(w){end("You Win 🎉","X",w);return;}
-  if(draw()){end("Draw 🤝","draw");return;}
+  if(checkWin(human)){end("You Win 🎉","X");return;}
+  if(isDraw()){end("Draw 🤝","draw");return;}
 
   statusEl.textContent="Bot thinking...";
-  setTimeout(botMove,300);
+  setTimeout(botMove,500);
 }
 
+/* 🧠 EASY BOT */
 function botMove(){
-  let best=-Infinity, move;
-  for(let i=0;i<9;i++){
-    if(!board[i]){
-      board[i]=bot;
-      const s=minimax(board,0,false);
-      board[i]="";
-      if(s>best){best=s;move=i;}
+  if(Math.random()<0.6){randomMove();return;}
+
+  let m=findBest(bot);
+  if(m!==null){playBot(m);return;}
+
+  m=findBest(human);
+  if(m!==null){playBot(m);return;}
+
+  randomMove();
+}
+
+function randomMove(){
+  const empty=board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
+  playBot(empty[Math.floor(Math.random()*empty.length)]);
+}
+
+function playBot(i){
+  board[i]=bot;
+  drawBoard();
+
+  if(checkWin(bot)){end("Bot Wins 😈","O");return;}
+  if(isDraw()){end("Draw 🤝","draw");return;}
+
+  statusEl.textContent="Your Turn (X)";
+}
+
+function findBest(p){
+  for(const w of wins){
+    const cells=w.map(i=>board[i]);
+    if(cells.filter(v=>v===p).length===2 && cells.includes("")){
+      return w[cells.indexOf("")];
     }
   }
-  board[move]=bot;
-  createBoard();
-
-  const w=winner(bot);
-  if(w){end("Bot Wins 😈","O",w);return;}
-  if(draw()){end("Draw 🤝","draw");return;}
-
-  statusEl.textContent="Your turn (X)";
+  return null;
 }
 
-function minimax(b,d,isMax){
-  if(winner(bot))return 10-d;
-  if(winner(human))return d-10;
-  if(draw())return 0;
-
-  if(isMax){
-    let best=-Infinity;
-    for(let i=0;i<9;i++)
-      if(!b[i]){b[i]=bot;best=Math.max(best,minimax(b,d+1,false));b[i]="";}
-    return best;
-  }else{
-    let best=Infinity;
-    for(let i=0;i<9;i++)
-      if(!b[i]){b[i]=human;best=Math.min(best,minimax(b,d+1,true));b[i]="";}
-    return best;
-  }
+function checkWin(p){
+  const w=wins.find(w=>w.every(i=>board[i]===p));
+  if(w)w.forEach(i=>boardEl.children[i].classList.add("win"));
+  return w;
 }
+function isDraw(){return board.every(Boolean);}
 
-function winner(p){return wins.find(w=>w.every(i=>board[i]===p));}
-function draw(){return board.every(Boolean);}
-
-function drawLine(w,color){
-  const c=document.querySelectorAll(".cell");
-  const a=c[w[0]].getBoundingClientRect();
-  const b=c[w[2]].getBoundingClientRect();
-  const r=boardEl.getBoundingClientRect();
-  ctx.strokeStyle=color;
-  ctx.lineWidth=6;
-  ctx.lineCap="round";
-  ctx.beginPath();
-  ctx.moveTo(a.left-r.left+a.width/2,a.top-r.top+a.height/2);
-  ctx.lineTo(b.left-r.left+b.width/2,b.top-r.top+b.height/2);
-  ctx.stroke();
-}
-
-/* END + SCORE */
-function end(msg,type,w){
+function end(msg,type){
   statusEl.textContent=msg;
-  if(type==="X"){scoreX++;scoreXEl.textContent=scoreX;}
-  else if(type==="O"){scoreO++;scoreOEl.textContent=scoreO;}
-  else{scoreDraw++;scoreDrawEl.textContent=scoreDraw;}
-  if(w)drawLine(w,type==="X"?"#60a5fa":"#f87171");
+  if(type==="X")sx.textContent=++scoreX;
+  else if(type==="O")so.textContent=++scoreO;
+  else sd.textContent=++scoreD;
   gameOver=true;
 }
 
-/* RESET */
 function resetGame(){
   board=Array(9).fill("");
   gameOver=false;
-  statusEl.textContent="Your turn (X)";
-  createBoard();
+  statusEl.textContent="Your Turn (X)";
+  drawBoard();
 }
 
 document.getElementById("resetScore").onclick=()=>{
-  scoreX=scoreO=scoreDraw=0;
-  scoreXEl.textContent=scoreOEl.textContent=scoreDrawEl.textContent=0;
+  scoreX=scoreO=scoreD=0;
+  sx.textContent=so.textContent=sd.textContent=0;
 };
 
-window.addEventListener("resize",resizeCanvas);
-createBoard();
-
-window.addEventListener("resize", () => {
-  resizeCanvas();
-});
-
+drawBoard();
 </script>
 
 </body>
 </html>
-
-
